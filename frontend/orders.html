@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Delivery Platform - Gestion des Commandes</title>
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        body {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .container {
+            margin-top: 50px;
+        }
+
+        .card {
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            margin-bottom: 30px;
+        }
+
+        .card-header {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            border-radius: 15px 15px 0 0 !important;
+            padding: 20px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            border: none;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+
+        .status-badge {
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+        }
+
+        .status-PENDING { background-color: #ffc107; color: #000; }
+        .status-CONFIRMED { background-color: #17a2b8; color: #fff; }
+        .status-IN_DELIVERY { background-color: #007bff; color: #fff; }
+        .status-DELIVERED { background-color: #28a745; color: #fff; }
+        .status-CANCELLED { background-color: #dc3545; color: #fff; }
+
+        #loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .order-row:hover {
+            background-color: #f8f9fa;
+        }
+
+        .nav-pills .nav-link {
+            color: white;
+            margin: 0 5px;
+        }
+
+        .nav-pills .nav-link.active {
+            background-color: rgba(255,255,255,0.3);
+        }
+    </style>
+</head>
+<body>
+
+<!-- Navbar -->
+<nav class="navbar navbar-dark bg-dark">
+    <div class="container-fluid">
+            <span class="navbar-brand mb-0 h1">
+                <i class="fas fa-shopping-cart"></i> Delivery Platform - Gestion des Commandes
+            </span>
+        <ul class="nav nav-pills">
+            <li class="nav-item">
+                <a class="nav-link" href="index.html">
+                    <i class="fas fa-users"></i> Clients
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link active" href="orders.html">
+                    <i class="fas fa-shopping-cart"></i> Commandes
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="deliveries.html">
+                    <i class="fas fa-truck"></i> Livraisons
+                </a>
+            </li>
+        </ul>
+        <span class="badge bg-light text-dark">
+                <i class="fas fa-shopping-cart"></i> <span id="orderCount">0</span> commandes
+            </span>
+    </div>
+</nav>
+
+<div class="container">
+
+    <!-- Loading -->
+    <div id="loading">
+        <div class="spinner-border text-light" role="status"></div>
+        <p class="text-light mt-3">Chargement...</p>
+    </div>
+
+    <!-- Alerts -->
+    <div id="alertContainer"></div>
+
+    <!-- Formulaire Commande -->
+    <div class="card">
+        <div class="card-header">
+            <h4 class="mb-0">
+                <i class="fas fa-plus-circle"></i>
+                <span id="formTitle">Créer une nouvelle commande</span>
+            </h4>
+        </div>
+        <div class="card-body">
+            <form id="orderForm">
+                <input type="hidden" id="orderId">
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="clientId" class="form-label">ID Client *</label>
+                        <input type="number" class="form-control" id="clientId" required
+                               placeholder="Ex: 1" min="1">
+                        <small class="text-muted">L'ID du client qui passe la commande</small>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="totalAmount" class="form-label">Montant Total (MAD) *</label>
+                        <input type="number" class="form-control" id="totalAmount" required
+                               placeholder="Ex: 150.00" min="1" step="0.01">
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="description" class="form-label">Description *</label>
+                    <textarea class="form-control" id="description" rows="3" required
+                              placeholder="Ex: 2 Pizzas Margherita + 2 Coca-Cola"
+                              minlength="10" maxlength="500"></textarea>
+                </div>
+
+                <div class="mb-3">
+                    <label for="deliveryAddress" class="form-label">Adresse de Livraison *</label>
+                    <textarea class="form-control" id="deliveryAddress" rows="2" required
+                              placeholder="Ex: 15 Avenue Mohammed V, Rabat"
+                              minlength="10" maxlength="200"></textarea>
+                </div>
+
+                <div class="d-flex gap-2">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save"></i> <span id="submitBtn">Créer la commande</span>
+                    </button>
+                    <button type="button" class="btn btn-secondary" id="cancelBtn" style="display:none;">
+                        <i class="fas fa-times"></i> Annuler
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Liste des Commandes -->
+    <div class="card">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h4 class="mb-0">
+                <i class="fas fa-list"></i> Liste des Commandes
+            </h4>
+            <button class="btn btn-light" onclick="loadOrders()">
+                <i class="fas fa-sync-alt"></i> Actualiser
+            </button>
+        </div>
+        <div class="card-body">
+            <!-- Filtres par statut -->
+            <div class="mb-3">
+                <button class="btn btn-sm btn-outline-secondary" onclick="filterByStatus('ALL')">
+                    Toutes
+                </button>
+                <button class="btn btn-sm btn-outline-warning" onclick="filterByStatus('PENDING')">
+                    En attente
+                </button>
+                <button class="btn btn-sm btn-outline-info" onclick="filterByStatus('CONFIRMED')">
+                    Confirmées
+                </button>
+                <button class="btn btn-sm btn-outline-primary" onclick="filterByStatus('IN_DELIVERY')">
+                    En livraison
+                </button>
+                <button class="btn btn-sm btn-outline-success" onclick="filterByStatus('DELIVERED')">
+                    Livrées
+                </button>
+                <button class="btn btn-sm btn-outline-danger" onclick="filterByStatus('CANCELLED')">
+                    Annulées
+                </button>
+            </div>
+
+            <!-- Table -->
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead class="table-light">
+                    <tr>
+                        <th>ID</th>
+                        <th>Client ID</th>
+                        <th>Description</th>
+                        <th>Montant</th>
+                        <th>Statut</th>
+                        <th>Adresse</th>
+                        <th>Date</th>
+                        <th>Actions</th>
+                    </tr>
+                    </thead>
+                    <tbody id="ordersTableBody">
+                    <tr>
+                        <td colspan="8" class="text-center">
+                            <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
+                            <p class="text-muted">Aucune commande pour le moment</p>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<!-- Modal Changer Statut -->
+<div class="modal fade" id="statusModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Changer le statut</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="statusOrderId">
+                <label class="form-label">Nouveau statut :</label>
+                <select class="form-select" id="newStatus">
+                    <option value="PENDING">En attente</option>
+                    <option value="CONFIRMED">Confirmée</option>
+                    <option value="IN_DELIVERY">En livraison</option>
+                    <option value="DELIVERED">Livrée</option>
+                    <option value="CANCELLED">Annulée</option>
+                </select>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                <button type="button" class="btn btn-primary" onclick="updateStatus()">Confirmer</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+    const API_BASE_URL = 'http://localhost:8082/api/orders';
+    let orders = [];
+    let statusModal;
+
+    document.addEventListener('DOMContentLoaded', function() {
+        loadOrders();
+        statusModal = new bootstrap.Modal(document.getElementById('statusModal'));
+
+        document.getElementById('orderForm').addEventListener('submit', handleSubmit);
+        document.getElementById('cancelBtn').addEventListener('click', resetForm);
+    });
+
+    async function loadOrders() {
+        showLoading(true);
+        try {
+            const response = await fetch(API_BASE_URL);
+            if (!response.ok) throw new Error('Erreur de chargement');
+
+            orders = await response.json();
+            displayOrders(orders);
+            updateOrderCount(orders.length);
+            showAlert('Commandes chargées avec succès!', 'success');
+        } catch (error) {
+            console.error('Erreur:', error);
+            showAlert('Erreur lors du chargement des commandes', 'danger');
+        } finally {
+            showLoading(false);
+        }
+    }
+
+    function displayOrders(ordersList) {
+        const tbody = document.getElementById('ordersTableBody');
+
+        if (ordersList.length === 0) {
+            tbody.innerHTML = `
+                    <tr>
+                        <td colspan="8" class="text-center">
+                            <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
+                            <p class="text-muted">Aucune commande trouvée</p>
+                        </td>
+                    </tr>
+                `;
+            return;
+        }
+
+        tbody.innerHTML = ordersList.map(order => `
+                <tr class="order-row">
+                    <td><strong>#${order.id}</strong></td>
+                    <td><span class="badge bg-secondary">Client ${order.clientId}</span></td>
+                    <td>${order.description}</td>
+                    <td><strong>${order.totalAmount.toFixed(2)} MAD</strong></td>
+                    <td><span class="status-badge status-${order.status}">${formatStatus(order.status)}</span></td>
+                    <td><small>${order.deliveryAddress}</small></td>
+                    <td><small class="text-muted">${formatDate(order.orderDate)}</small></td>
+                    <td>
+                        <button class="btn btn-sm btn-info" onclick="openStatusModal(${order.id}, '${order.status}')">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="btn btn-sm btn-danger" onclick="deleteOrder(${order.id})">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+    }
+
+    async function handleSubmit(e) {
+        e.preventDefault();
+
+        const orderData = {
+            clientId: parseInt(document.getElementById('clientId').value),
+            description: document.getElementById('description').value,
+            totalAmount: parseFloat(document.getElementById('totalAmount').value),
+            deliveryAddress: document.getElementById('deliveryAddress').value
+        };
+
+        showLoading(true);
+
+        try {
+            const response = await fetch(API_BASE_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(orderData)
+            });
+
+            if (!response.ok) {
+                const error = await response.json();
+                throw new Error(error.message || 'Erreur lors de la création');
+            }
+
+            showAlert('Commande créée avec succès!', 'success');
+            resetForm();
+            loadOrders();
+
+        } catch (error) {
+            console.error('Erreur:', error);
+            showAlert(error.message, 'danger');
+        } finally {
+            showLoading(false);
+        }
+    }
+
+    function openStatusModal(orderId, currentStatus) {
+        document.getElementById('statusOrderId').value = orderId;
+        document.getElementById('newStatus').value = currentStatus;
+        statusModal.show();
+    }
+
+    async function updateStatus() {
+        const orderId = document.getElementById('statusOrderId').value;
+        const newStatus = document.getElementById('newStatus').value;
+
+        showLoading(true);
+
+        try {
+            const response = await fetch(`${API_BASE_URL}/${orderId}/status?status=${newStatus}`, {
+                method: 'PUT'
+            });
+
+            if (!response.ok) throw new Error('Erreur lors de la mise à jour');
+
+            showAlert('Statut mis à jour avec succès!', 'success');
+            statusModal.hide();
+            loadOrders();
+
+        } catch (error) {
+            console.error('Erreur:', error);
+            showAlert('Erreur lors de la mise à jour du statut', 'danger');
+        } finally {
+            showLoading(false);
+        }
+    }
+
+    async function deleteOrder(id) {
+        if (!confirm('Êtes-vous sûr de vouloir supprimer cette commande ?')) return;
+
+        showLoading(true);
+        try {
+            const response = await fetch(`${API_BASE_URL}/${id}`, { method: 'DELETE' });
+            if (!response.ok) throw new Error('Erreur lors de la suppression');
+
+            showAlert('Commande supprimée avec succès!', 'success');
+            loadOrders();
+        } catch (error) {
+            console.error('Erreur:', error);
+            showAlert('Erreur lors de la suppression', 'danger');
+        } finally {
+            showLoading(false);
+        }
+    }
+
+    function filterByStatus(status) {
+        if (status === 'ALL') {
+            displayOrders(orders);
+        } else {
+            const filtered = orders.filter(order => order.status === status);
+            displayOrders(filtered);
+        }
+    }
+
+    function resetForm() {
+        document.getElementById('orderForm').reset();
+        document.getElementById('orderId').value = '';
+    }
+
+    function showLoading(show) {
+        document.getElementById('loading').style.display = show ? 'block' : 'none';
+    }
+
+    function showAlert(message, type) {
+        const alertContainer = document.getElementById('alertContainer');
+        const alert = document.createElement('div');
+        alert.className = `alert alert-${type} alert-dismissible fade show`;
+        alert.innerHTML = `${message}<button type="button" class="btn-close" data-bs-dismiss="alert"></button>`;
+        alertContainer.appendChild(alert);
+        setTimeout(() => alert.remove(), 5000);
+    }
+
+    function formatDate(dateString) {
+        if (!dateString) return 'N/A';
+        const date = new Date(dateString);
+        return date.toLocaleDateString('fr-FR') + ' ' + date.toLocaleTimeString('fr-FR');
+    }
+
+    function formatStatus(status) {
+        const statusMap = {
+            'PENDING': 'En attente',
+            'CONFIRMED': 'Confirmée',
+            'IN_DELIVERY': 'En livraison',
+            'DELIVERED': 'Livrée',
+            'CANCELLED': 'Annulée'
+        };
+        return statusMap[status] || status;
+    }
+
+    function updateOrderCount(count) {
+        document.getElementById('orderCount').textContent = count;
+    }
+</script>
+
+</body>
+</html>
