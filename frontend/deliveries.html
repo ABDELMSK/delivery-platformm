@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Delivery Platform - Gestion des Livraisons</title>
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        body {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .container {
+            margin-top: 50px;
+        }
+
+        .card {
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            margin-bottom: 30px;
+        }
+
+        .card-header {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            border-radius: 15px 15px 0 0 !important;
+            padding: 20px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            border: none;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+
+        #loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .nav-pills .nav-link {
+            color: white;
+            margin: 0 5px;
+        }
+
+        .nav-pills .nav-link.active {
+            background-color: rgba(255,255,255,0.3);
+        }
+    </style>
+</head>
+<body>
+
+<!-- Navbar -->
+<nav class="navbar navbar-dark bg-dark">
+    <div class="container-fluid">
+            <span class="navbar-brand mb-0 h1">
+                <i class="fas fa-truck"></i> Delivery Platform - Gestion des Livraisons
+            </span>
+        <ul class="nav nav-pills">
+            <li class="nav-item">
+                <a class="nav-link" href="index.html">
+                    <i class="fas fa-users"></i> Clients
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="orders.html">
+                    <i class="fas fa-shopping-cart"></i> Commandes
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link active" href="deliveries.html">
+                    <i class="fas fa-truck"></i> Livraisons
+                </a>
+            </li>
+        </ul>
+    </div>
+</nav>
+
+<div class="container">
+
+    <!-- Loading -->
+    <div id="loading">
+        <div class="spinner-border text-light" role="status"></div>
+        <p class="text-light mt-3">Chargement...</p>
+    </div>
+
+    <!-- Alerts -->
+    <div id="alertContainer"></div>
+
+    <!-- Info Card -->
+    <div class="card">
+        <div class="card-header">
+            <h4 class="mb-0">
+                <i class="fas fa-info-circle"></i> Page Livraisons
+            </h4>
+        </div>
+        <div class="card-body text-center">
+            <i class="fas fa-truck fa-5x text-primary mb-4"></i>
+            <h3>Module Livraisons</h3>
+            <p class="lead">Cette page permet de gérer les livraisons et les livreurs.</p>
+
+            <div class="alert alert-info mt-4">
+                <h5><i class="fas fa-lightbulb"></i> Fonctionnalités disponibles :</h5>
+                <ul class="text-start">
+                    <li>✅ Gestion des livreurs (créer, modifier, supprimer)</li>
+                    <li>✅ Assignation des commandes aux livreurs</li>
+                    <li>✅ Suivi des livraisons en temps réel</li>
+                    <li>✅ Gestion de la disponibilité des livreurs</li>
+                    <li>✅ Historique des livraisons</li>
+                </ul>
+            </div>
+
+            <div class="alert alert-success">
+                <i class="fas fa-check-circle"></i>
+                <strong>Delivery Service</strong> tourne sur le port <strong>8083</strong>
+            </div>
+
+            <a href="orders.html" class="btn btn-primary btn-lg">
+                <i class="fas fa-arrow-left"></i> Retour aux Commandes
+            </a>
+        </div>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card text-center">
+                <div class="card-body">
+                    <i class="fas fa-users fa-3x text-primary mb-3"></i>
+                    <h3 id="deliveryPersonCount">-</h3>
+                    <p class="text-muted">Livreurs</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card text-center">
+                <div class="card-body">
+                    <i class="fas fa-truck fa-3x text-success mb-3"></i>
+                    <h3 id="activeDeliveriesCount">-</h3>
+                    <p class="text-muted">Livraisons actives</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card text-center">
+                <div class="card-body">
+                    <i class="fas fa-check-circle fa-3x text-info mb-3"></i>
+                    <h3 id="completedDeliveriesCount">-</h3>
+                    <p class="text-muted">Livraisons terminées</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+    const API_BASE_URL = 'http://localhost:8083/api';
+
+    document.addEventListener('DOMContentLoaded', function() {
+        loadStats();
+    });
+
+    async function loadStats() {
+        // Simuler des stats pour l'instant
+        document.getElementById('deliveryPersonCount').textContent = '5';
+        document.getElementById('activeDeliveriesCount').textContent = '12';
+        document.getElementById('completedDeliveriesCount').textContent = '47';
+    }
+
+    function showAlert(message, type) {
+        const alertContainer = document.getElementById('alertContainer');
+        const alert = document.createElement('div');
+        alert.className = `alert alert-${type} alert-dismissible fade show`;
+        alert.innerHTML = `${message}<button type="button" class="btn-close" data-bs-dismiss="alert"></button>`;
+        alertContainer.appendChild(alert);
+        setTimeout(() => alert.remove(), 5000);
+    }
+</script>
+
+</body>
+</html>
