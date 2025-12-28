@@ -12,63 +12,235 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <style>
+        :root {
+            --primary-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            --shadow-card: 0 10px 30px rgba(0,0,0,0.3);
+            --shadow-hover: 0 5px 15px rgba(0,0,0,0.3);
+        }
+
         body {
-            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            background: var(--primary-gradient);
             min-height: 100vh;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
         .container {
             margin-top: 50px;
+            margin-bottom: 50px;
         }
 
         .card {
             border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            box-shadow: var(--shadow-card);
             margin-bottom: 30px;
+            transition: transform 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
         }
 
         .card-header {
-            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            background: var(--primary-gradient);
             color: white;
             border-radius: 15px 15px 0 0 !important;
             padding: 20px;
         }
 
         .btn-primary {
-            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            background: var(--primary-gradient);
             border: none;
+            transition: all 0.3s ease;
         }
 
         .btn-primary:hover {
             transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            box-shadow: var(--shadow-hover);
         }
 
         #loading {
             display: none;
             text-align: center;
             padding: 20px;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 9999;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 15px;
+            padding: 40px;
+            box-shadow: var(--shadow-card);
         }
 
         .nav-pills .nav-link {
             color: white;
             margin: 0 5px;
+            transition: all 0.3s ease;
         }
 
         .nav-pills .nav-link.active {
             background-color: rgba(255,255,255,0.3);
+        }
+
+        .nav-pills .nav-link:hover {
+            background-color: rgba(255,255,255,0.2);
+        }
+
+        .stats-card {
+            text-align: center;
+            padding: 20px;
+            border-radius: 15px;
+            background: white;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+            transition: transform 0.3s ease;
+        }
+
+        .stats-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .stats-icon {
+            font-size: 3rem;
+            margin-bottom: 10px;
+        }
+
+        .stats-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+
+        .stats-label {
+            color: #6c757d;
+            font-size: 0.9rem;
+        }
+
+        .delivery-row, .person-row {
+            transition: background-color 0.3s ease;
+            cursor: pointer;
+        }
+
+        .delivery-row:hover, .person-row:hover {
+            background-color: #f8f9fa;
+        }
+
+        .status-badge {
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 0.85rem;
+        }
+
+        .status-ASSIGNED { background-color: #ffc107; color: #000; }
+        .status-IN_PROGRESS { background-color: #007bff; color: #fff; }
+        .status-COMPLETED { background-color: #28a745; color: #fff; }
+        .status-FAILED { background-color: #dc3545; color: #fff; }
+
+        .available-badge {
+            padding: 5px 12px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+
+        .available-true { background-color: #28a745; color: white; }
+        .available-false { background-color: #dc3545; color: white; }
+
+        .toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 9999;
+        }
+
+        .spinner-border {
+            width: 3rem;
+            height: 3rem;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+        }
+
+        .empty-state i {
+            font-size: 5rem;
+            color: #dee2e6;
+            margin-bottom: 20px;
+        }
+
+        .badge-counter {
+            background-color: rgba(255, 255, 255, 0.2);
+            padding: 5px 15px;
+            border-radius: 20px;
+        }
+
+        .nav-tabs-custom {
+            border-bottom: 2px solid #dee2e6;
+        }
+
+        .nav-tabs-custom .nav-link {
+            color: #495057;
+            border: none;
+            border-bottom: 3px solid transparent;
+            padding: 12px 20px;
+            transition: all 0.3s ease;
+        }
+
+        .nav-tabs-custom .nav-link:hover {
+            border-color: #00f2fe;
+            color: #00f2fe;
+        }
+
+        .nav-tabs-custom .nav-link.active {
+            color: #00f2fe;
+            border-color: #00f2fe;
+            background: transparent;
+        }
+
+        .search-box {
+            position: relative;
+        }
+
+        .search-box i {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #6c757d;
+        }
+
+        .search-box input {
+            padding-left: 45px;
+            border-radius: 25px;
+        }
+
+        .form-control:focus, .form-select:focus {
+            border-color: #00f2fe;
+            box-shadow: 0 0 0 0.2rem rgba(0, 242, 254, 0.25);
+        }
+
+        @media (max-width: 768px) {
+            .stats-number {
+                font-size: 2rem;
+            }
+            
+            .table-responsive {
+                font-size: 0.85rem;
+            }
         }
     </style>
 </head>
 <body>
 
 <!-- Navbar -->
-<nav class="navbar navbar-dark bg-dark">
+<nav class="navbar navbar-dark bg-dark sticky-top">
     <div class="container-fluid">
-            <span class="navbar-brand mb-0 h1">
-                <i class="fas fa-truck"></i> Delivery Platform - Gestion des Livraisons
-            </span>
+        <span class="navbar-brand mb-0 h1">
+            <i class="fas fa-truck"></i> Delivery Platform - Gestion des Livraisons
+        </span>
         <ul class="nav nav-pills">
             <li class="nav-item">
                 <a class="nav-link" href="index.html">
@@ -86,6 +258,9 @@
                 </a>
             </li>
         </ul>
+        <span class="badge-counter">
+            <i class="fas fa-truck"></i> <span id="deliveryCount">0</span> livraisons
+        </span>
     </div>
 </nav>
 
@@ -93,104 +268,895 @@
 
     <!-- Loading -->
     <div id="loading">
-        <div class="spinner-border text-light" role="status"></div>
-        <p class="text-light mt-3">Chargement...</p>
+        <div class="spinner-border text-primary" role="status"></div>
+        <p class="text-dark mt-3 fw-bold">Chargement...</p>
     </div>
+
+    <!-- Toast Container -->
+    <div class="toast-container"></div>
 
     <!-- Alerts -->
     <div id="alertContainer"></div>
 
-    <!-- Info Card -->
-    <div class="card">
-        <div class="card-header">
-            <h4 class="mb-0">
-                <i class="fas fa-info-circle"></i> Page Livraisons
-            </h4>
-        </div>
-        <div class="card-body text-center">
-            <i class="fas fa-truck fa-5x text-primary mb-4"></i>
-            <h3>Module Livraisons</h3>
-            <p class="lead">Cette page permet de gérer les livraisons et les livreurs.</p>
-
-            <div class="alert alert-info mt-4">
-                <h5><i class="fas fa-lightbulb"></i> Fonctionnalités disponibles :</h5>
-                <ul class="text-start">
-                    <li>✅ Gestion des livreurs (créer, modifier, supprimer)</li>
-                    <li>✅ Assignation des commandes aux livreurs</li>
-                    <li>✅ Suivi des livraisons en temps réel</li>
-                    <li>✅ Gestion de la disponibilité des livreurs</li>
-                    <li>✅ Historique des livraisons</li>
-                </ul>
-            </div>
-
-            <div class="alert alert-success">
-                <i class="fas fa-check-circle"></i>
-                <strong>Delivery Service</strong> tourne sur le port <strong>8083</strong>
-            </div>
-
-            <a href="orders.html" class="btn btn-primary btn-lg">
-                <i class="fas fa-arrow-left"></i> Retour aux Commandes
-            </a>
-        </div>
-    </div>
-
-    <!-- Stats Cards -->
-    <div class="row">
-        <div class="col-md-4">
-            <div class="card text-center">
-                <div class="card-body">
-                    <i class="fas fa-users fa-3x text-primary mb-3"></i>
-                    <h3 id="deliveryPersonCount">-</h3>
-                    <p class="text-muted">Livreurs</p>
-                </div>
+    <!-- Statistiques -->
+    <div class="row mb-4">
+        <div class="col-md-3 col-sm-6">
+            <div class="stats-card">
+                <i class="fas fa-users stats-icon text-primary"></i>
+                <div class="stats-number text-primary" id="statTotalPersons">0</div>
+                <div class="stats-label">Total Livreurs</div>
             </div>
         </div>
-        <div class="col-md-4">
-            <div class="card text-center">
-                <div class="card-body">
-                    <i class="fas fa-truck fa-3x text-success mb-3"></i>
-                    <h3 id="activeDeliveriesCount">-</h3>
-                    <p class="text-muted">Livraisons actives</p>
-                </div>
+        <div class="col-md-3 col-sm-6">
+            <div class="stats-card">
+                <i class="fas fa-user-check stats-icon text-success"></i>
+                <div class="stats-number text-success" id="statAvailable">0</div>
+                <div class="stats-label">Disponibles</div>
             </div>
         </div>
-        <div class="col-md-4">
-            <div class="card text-center">
-                <div class="card-body">
-                    <i class="fas fa-check-circle fa-3x text-info mb-3"></i>
-                    <h3 id="completedDeliveriesCount">-</h3>
-                    <p class="text-muted">Livraisons terminées</p>
-                </div>
+        <div class="col-md-3 col-sm-6">
+            <div class="stats-card">
+                <i class="fas fa-truck-loading stats-icon text-warning"></i>
+                <div class="stats-number text-warning" id="statInProgress">0</div>
+                <div class="stats-label">En cours</div>
+            </div>
+        </div>
+        <div class="col-md-3 col-sm-6">
+            <div class="stats-card">
+                <i class="fas fa-check-double stats-icon text-info"></i>
+                <div class="stats-number text-info" id="statCompleted">0</div>
+                <div class="stats-label">Terminées</div>
             </div>
         </div>
     </div>
 
+    <!-- Tabs Navigation -->
+    <ul class="nav nav-tabs-custom mb-4" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="deliveries-tab" data-bs-toggle="tab" 
+                    data-bs-target="#deliveries-panel" type="button" role="tab">
+                <i class="fas fa-shipping-fast"></i> Livraisons
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="persons-tab" data-bs-toggle="tab" 
+                    data-bs-target="#persons-panel" type="button" role="tab">
+                <i class="fas fa-user-tie"></i> Livreurs
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="assign-tab" data-bs-toggle="tab" 
+                    data-bs-target="#assign-panel" type="button" role="tab">
+                <i class="fas fa-tasks"></i> Assigner une livraison
+            </button>
+        </li>
+    </ul>
+
+    <!-- Tab Content -->
+    <div class="tab-content">
+        
+        <!-- ONGLET LIVRAISONS -->
+        <div class="tab-pane fade show active" id="deliveries-panel" role="tabpanel">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center flex-wrap">
+                    <h4 class="mb-0">
+                        <i class="fas fa-list"></i> Liste des Livraisons
+                    </h4>
+                    <button class="btn btn-light" onclick="loadDeliveries()">
+                        <i class="fas fa-sync-alt"></i> Actualiser
+                    </button>
+                </div>
+                <div class="card-body">
+                    <!-- Recherche et filtres -->
+                    <div class="row mb-3">
+                        <div class="col-md-8">
+                            <div class="search-box">
+                                <i class="fas fa-search"></i>
+                                <input type="text" class="form-control" id="searchDeliveries"
+                                       placeholder="Rechercher par ID commande, ID livreur...">
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <select class="form-select" id="filterDeliveryStatus">
+                                <option value="ALL">Tous les statuts</option>
+                                <option value="ASSIGNED">Assignées</option>
+                                <option value="IN_PROGRESS">En cours</option>
+                                <option value="COMPLETED">Terminées</option>
+                                <option value="FAILED">Échouées</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Table des livraisons -->
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead class="table-light">
+                            <tr>
+                                <th><i class="fas fa-hashtag"></i> ID</th>
+                                <th><i class="fas fa-shopping-cart"></i> Commande</th>
+                                <th><i class="fas fa-user"></i> Livreur</th>
+                                <th><i class="fas fa-info-circle"></i> Statut</th>
+                                <th><i class="fas fa-calendar"></i> Assignée le</th>
+                                <th><i class="fas fa-calendar-check"></i> Terminée le</th>
+                                <th><i class="fas fa-cog"></i> Actions</th>
+                            </tr>
+                            </thead>
+                            <tbody id="deliveriesTableBody">
+                            <tr>
+                                <td colspan="7">
+                                    <div class="empty-state">
+                                        <i class="fas fa-truck"></i>
+                                        <p class="text-muted">Aucune livraison pour le moment</p>
+                                    </div>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ONGLET LIVREURS -->
+        <div class="tab-pane fade" id="persons-panel" role="tabpanel">
+            <!-- Formulaire Livreur -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h4 class="mb-0">
+                        <i class="fas fa-user-plus"></i>
+                        <span id="personFormTitle">Ajouter un nouveau livreur</span>
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <form id="personForm" novalidate>
+                        <input type="hidden" id="personId">
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="firstName" class="form-label">
+                                    <i class="fas fa-user"></i> Prénom *
+                                </label>
+                                <input type="text" class="form-control" id="firstName" required
+                                       placeholder="Ex: Mohammed" minlength="2" maxlength="50">
+                                <div class="invalid-feedback">
+                                    Le prénom est requis (2-50 caractères).
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="lastName" class="form-label">
+                                    <i class="fas fa-user"></i> Nom *
+                                </label>
+                                <input type="text" class="form-control" id="lastName" required
+                                       placeholder="Ex: Alami" minlength="2" maxlength="50">
+                                <div class="invalid-feedback">
+                                    Le nom est requis (2-50 caractères).
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="phone" class="form-label">
+                                    <i class="fas fa-phone"></i> Téléphone *
+                                </label>
+                                <input type="tel" class="form-control" id="phone" required
+                                       placeholder="Ex: 0612345678" pattern="^(\\+212|0)[5-7][0-9]{8}$">
+                                <div class="invalid-feedback">
+                                    Format: 06XXXXXXXX ou +212XXXXXXXXX
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="vehicleType" class="form-label">
+                                    <i class="fas fa-motorcycle"></i> Type de Véhicule
+                                </label>
+                                <select class="form-select" id="vehicleType">
+                                    <option value="">-- Sélectionner --</option>
+                                    <option value="Moto">Moto</option>
+                                    <option value="Scooter">Scooter</option>
+                                    <option value="Vélo">Vélo</option>
+                                    <option value="Voiture">Voiture</option>
+                                    <option value="Camionnette">Camionnette</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="d-flex gap-2">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save"></i> <span id="personSubmitBtn">Ajouter</span>
+                            </button>
+                            <button type="button" class="btn btn-secondary" id="personCancelBtn" 
+                                    style="display:none;">
+                                <i class="fas fa-times"></i> Annuler
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Liste des livreurs -->
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h4 class="mb-0">
+                        <i class="fas fa-list"></i> Liste des Livreurs
+                    </h4>
+                    <div>
+                        <button class="btn btn-sm btn-outline-light me-2" onclick="filterPersons('available')">
+                            <i class="fas fa-user-check"></i> Disponibles
+                        </button>
+                        <button class="btn btn-light" onclick="loadDeliveryPersons()">
+                            <i class="fas fa-sync-alt"></i> Actualiser
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <!-- Recherche livreurs -->
+                    <div class="mb-3">
+                        <div class="search-box">
+                            <i class="fas fa-search"></i>
+                            <input type="text" class="form-control" id="searchPersons"
+                                   placeholder="Rechercher par nom, prénom, téléphone...">
+                        </div>
+                    </div>
+
+                    <!-- Table des livreurs -->
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead class="table-light">
+                            <tr>
+                                <th><i class="fas fa-hashtag"></i> ID</th>
+                                <th><i class="fas fa-user"></i> Nom Complet</th>
+                                <th><i class="fas fa-phone"></i> Téléphone</th>
+                                <th><i class="fas fa-motorcycle"></i> Véhicule</th>
+                                <th><i class="fas fa-toggle-on"></i> Disponibilité</th>
+                                <th><i class="fas fa-cog"></i> Actions</th>
+                            </tr>
+                            </thead>
+                            <tbody id="personsTableBody">
+                            <tr>
+                                <td colspan="6">
+                                    <div class="empty-state">
+                                        <i class="fas fa-user-tie"></i>
+                                        <p class="text-muted">Aucun livreur pour le moment</p>
+                                    </div>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ONGLET ASSIGNER UNE LIVRAISON -->
+        <div class="tab-pane fade" id="assign-panel" role="tabpanel">
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="mb-0">
+                        <i class="fas fa-tasks"></i> Assigner une commande à un livreur
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <form id="assignForm" novalidate>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="assignOrderId" class="form-label">
+                                    <i class="fas fa-shopping-cart"></i> ID de la Commande *
+                                </label>
+                                <input type="number" class="form-control" id="assignOrderId" required
+                                       placeholder="Ex: 1" min="1">
+                                <div class="invalid-feedback">
+                                    L'ID de la commande est requis.
+                                </div>
+                                <small class="text-muted">
+                                    Entrez l'ID de la commande à livrer
+                                </small>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="assignPersonId" class="form-label">
+                                    <i class="fas fa-user"></i> Livreur *
+                                </label>
+                                <select class="form-select" id="assignPersonId" required>
+                                    <option value="">-- Sélectionner un livreur --</option>
+                                </select>
+                                <div class="invalid-feedback">
+                                    Veuillez sélectionner un livreur.
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle"></i>
+                            <strong>Note:</strong> Seuls les livreurs disponibles peuvent être assignés. 
+                            Une fois assigné, le livreur sera automatiquement marqué comme non disponible.
+                        </div>
+
+                        <button type="submit" class="btn btn-primary btn-lg">
+                            <i class="fas fa-paper-plane"></i> Assigner la livraison
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+<!-- Modal Changer Statut Livraison -->
+<div class="modal fade" id="deliveryStatusModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="fas fa-edit"></i> Changer le statut de la livraison
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="statusDeliveryId">
+                <div class="mb-3">
+                    <label class="form-label">Nouveau statut :</label>
+                    <select class="form-select" id="newDeliveryStatus">
+                        <option value="ASSIGNED">Assignée</option>
+                        <option value="IN_PROGRESS">En cours</option>
+                        <option value="COMPLETED">Terminée</option>
+                        <option value="FAILED">Échouée</option>
+                    </select>
+                </div>
+                <div class="alert alert-warning">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <strong>Attention:</strong> Si vous marquez la livraison comme "Terminée" ou "Échouée", 
+                    le livreur sera automatiquement marqué comme disponible.
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    <i class="fas fa-times"></i> Annuler
+                </button>
+                <button type="button" class="btn btn-primary" onclick="updateDeliveryStatus()">
+                    <i class="fas fa-check"></i> Confirmer
+                </button>
+            </div>
+        </div>
+    </div>
 </div>
 
 <!-- Bootstrap JS -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
 <script>
-    const API_BASE_URL = 'http://localhost:8083/api';
+    // Configuration
+    const DELIVERY_API_URL = 'http://localhost:8083/api/deliveries';
+    const PERSON_API_URL = 'http://localhost:8083/api/delivery-persons';
 
+    let deliveries = [];
+    let deliveryPersons = [];
+    let deliveryStatusModal;
+
+    // Initialisation
     document.addEventListener('DOMContentLoaded', function() {
-        loadStats();
+        loadDeliveries();
+        loadDeliveryPersons();
+        
+        deliveryStatusModal = new bootstrap.Modal(document.getElementById('deliveryStatusModal'));
+
+        // Event listeners
+        document.getElementById('personForm').addEventListener('submit', handlePersonSubmit);
+        document.getElementById('assignForm').addEventListener('submit', handleAssignSubmit);
+        document.getElementById('personCancelBtn').addEventListener('click', resetPersonForm);
+        document.getElementById('searchDeliveries').addEventListener('input', filterDeliveries);
+        document.getElementById('filterDeliveryStatus').addEventListener('change', filterDeliveries);
+        document.getElementById('searchPersons').addEventListener('input', filterPersons);
+
+        // Auto-refresh toutes les 30 secondes
+        setInterval(() => {
+            loadDeliveries(true);
+            loadDeliveryPersons(true);
+        }, 30000);
     });
 
-    async function loadStats() {
-        // Simuler des stats pour l'instant
-        document.getElementById('deliveryPersonCount').textContent = '5';
-        document.getElementById('activeDeliveriesCount').textContent = '12';
-        document.getElementById('completedDeliveriesCount').textContent = '47';
+    // ========== LIVRAISONS ==========
+
+    // Charger les livraisons
+    async function loadDeliveries(silent = false) {
+        if (!silent) showLoading(true);
+        
+        try {
+            const response = await fetch(DELIVERY_API_URL);
+            if (!response.ok) throw new Error('Erreur de chargement');
+
+            deliveries = await response.json();
+            updateStatistics();
+            filterDeliveries();
+            
+            if (!silent) {
+                showToast('Livraisons chargées avec succès!', 'success');
+            }
+        } catch (error) {
+            console.error('Erreur:', error);
+            if (!silent) {
+                showToast('Erreur lors du chargement des livraisons', 'danger');
+            }
+        } finally {
+            if (!silent) showLoading(false);
+        }
     }
 
-    function showAlert(message, type) {
-        const alertContainer = document.getElementById('alertContainer');
-        const alert = document.createElement('div');
-        alert.className = `alert alert-${type} alert-dismissible fade show`;
-        alert.innerHTML = `${message}<button type="button" class="btn-close" data-bs-dismiss="alert"></button>`;
-        alertContainer.appendChild(alert);
-        setTimeout(() => alert.remove(), 5000);
+    // Afficher les livraisons
+    function displayDeliveries(deliveriesList) {
+        const tbody = document.getElementById('deliveriesTableBody');
+        document.getElementById('deliveryCount').textContent = deliveriesList.length;
+
+        if (deliveriesList.length === 0) {
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="7">
+                        <div class="empty-state">
+                            <i class="fas fa-truck"></i>
+                            <p class="text-muted">Aucune livraison trouvée</p>
+                        </div>
+                    </td>
+                </tr>
+            `;
+            return;
+        }
+
+        tbody.innerHTML = deliveriesList.map(delivery => {
+            const person = deliveryPersons.find(p => p.id === delivery.deliveryPersonId);
+            const personName = person ? `${person.firstName} ${person.lastName}` : `Livreur #${delivery.deliveryPersonId}`;
+            
+            return `
+                <tr class="delivery-row">
+                    <td><strong>#${delivery.id}</strong></td>
+                    <td>
+                        <span class="badge bg-secondary">
+                            <i class="fas fa-shopping-cart"></i> Commande #${delivery.orderId}
+                        </span>
+                    </td>
+                    <td>
+                        <i class="fas fa-user"></i> ${personName}
+                    </td>
+                    <td>
+                        <span class="status-badge status-${delivery.status}">
+                            ${formatDeliveryStatus(delivery.status)}
+                        </span>
+                    </td>
+                    <td><small>${formatDate(delivery.assignedAt)}</small></td>
+                    <td><small>${delivery.completedAt ? formatDate(delivery.completedAt) : 'N/A'}</small></td>
+                    <td>
+                        <button class="btn btn-sm btn-info" 
+                                onclick="openDeliveryStatusModal(${delivery.id}, '${delivery.status}')"
+                                title="Changer le statut">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                    </td>
+                </tr>
+            `;
+        }).join('');
+    }
+
+    // Filtrer les livraisons
+    function filterDeliveries() {
+        const searchTerm = document.getElementById('searchDeliveries').value.toLowerCase();
+        const statusFilter = document.getElementById('filterDeliveryStatus').value;
+
+        let filtered = [...deliveries];
+
+        // Filtre par statut
+        if (statusFilter !== 'ALL') {
+            filtered = filtered.filter(d => d.status === statusFilter);
+        }
+
+        // Filtre par recherche
+        if (searchTerm) {
+            filtered = filtered.filter(d =>
+                d.id.toString().includes(searchTerm) ||
+                d.orderId.toString().includes(searchTerm) ||
+                d.deliveryPersonId.toString().includes(searchTerm)
+            );
+        }
+
+        displayDeliveries(filtered);
+    }
+
+    // Ouvrir le modal de changement de statut
+    function openDeliveryStatusModal(deliveryId, currentStatus) {
+        document.getElementById('statusDeliveryId').value = deliveryId;
+        document.getElementById('newDeliveryStatus').value = currentStatus;
+        deliveryStatusModal.show();
+    }
+
+    // Mettre à jour le statut de livraison
+    async function updateDeliveryStatus() {
+        const deliveryId = document.getElementById('statusDeliveryId').value;
+        const newStatus = document.getElementById('newDeliveryStatus').value;
+
+        showLoading(true);
+
+        try {
+            const response = await fetch(`${DELIVERY_API_URL}/${deliveryId}/status?status=${newStatus}`, {
+                method: 'PUT'
+            });
+
+            if (!response.ok) throw new Error('Erreur lors de la mise à jour');
+
+            showToast('Statut de livraison mis à jour avec succès!', 'success');
+            deliveryStatusModal.hide();
+            loadDeliveries();
+            loadDeliveryPersons(); // Recharger aussi les livreurs car la disponibilité peut changer
+
+        } catch (error) {
+            console.error('Erreur:', error);
+            showToast('Erreur lors de la mise à jour du statut', 'danger');
+        } finally {
+            showLoading(false);
+        }
+    }
+
+    // ========== LIVREURS ==========
+
+    // Charger les livreurs
+    async function loadDeliveryPersons(silent = false) {
+        if (!silent) showLoading(true);
+        
+        try {
+            const response = await fetch(PERSON_API_URL);
+            if (!response.ok) throw new Error('Erreur de chargement');
+
+            deliveryPersons = await response.json();
+            displayDeliveryPersons(deliveryPersons);
+            populateAvailablePersonsSelect();
+            updateStatistics();
+            
+            if (!silent) {
+                showToast('Livreurs chargés avec succès!', 'success');
+            }
+        } catch (error) {
+            console.error('Erreur:', error);
+            if (!silent) {
+                showToast('Erreur lors du chargement des livreurs', 'danger');
+            }
+        } finally {
+            if (!silent) showLoading(false);
+        }
+    }
+
+    // Afficher les livreurs
+    function displayDeliveryPersons(personsList) {
+        const tbody = document.getElementById('personsTableBody');
+
+        if (personsList.length === 0) {
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="6">
+                        <div class="empty-state">
+                            <i class="fas fa-user-tie"></i>
+                            <p class="text-muted">Aucun livreur trouvé</p>
+                        </div>
+                    </td>
+                </tr>
+            `;
+            return;
+        }
+
+        tbody.innerHTML = personsList.map(person => `
+            <tr class="person-row">
+                <td><strong>#${person.id}</strong></td>
+                <td>
+                    <i class="fas fa-user"></i> 
+                    <strong>${person.firstName} ${person.lastName}</strong>
+                </td>
+                <td><i class="fas fa-phone"></i> ${person.phone}</td>
+                <td>
+                    ${person.vehicleType ? 
+                        `<span class="badge bg-info"><i class="fas fa-motorcycle"></i> ${person.vehicleType}</span>` : 
+                        '<span class="text-muted">N/A</span>'}
+                </td>
+                <td>
+                    <span class="available-badge available-${person.isAvailable}">
+                        <i class="fas fa-${person.isAvailable ? 'check-circle' : 'times-circle'}"></i>
+                        ${person.isAvailable ? 'Disponible' : 'Occupé'}
+                    </span>
+                </td>
+                <td>
+                    <button class="btn btn-sm btn-warning" 
+                            onclick="editPerson(${person.id})"
+                            title="Modifier">
+                        <i class="fas fa-edit"></i>
+                    </button>
+                    <button class="btn btn-sm btn-danger" 
+                            onclick="deletePerson(${person.id})"
+                            title="Supprimer">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </td>
+            </tr>
+        `).join('');
+    }
+
+    // Filtrer les livreurs
+    function filterPersons(filter = null) {
+        const searchTerm = document.getElementById('searchPersons').value.toLowerCase();
+        let filtered = [...deliveryPersons];
+
+        // Filtre disponibilité
+        if (filter === 'available') {
+            filtered = filtered.filter(p => p.isAvailable === true);
+        }
+
+        // Filtre recherche
+        if (searchTerm) {
+            filtered = filtered.filter(p =>
+                p.firstName.toLowerCase().includes(searchTerm) ||
+                p.lastName.toLowerCase().includes(searchTerm) ||
+                p.phone.includes(searchTerm) ||
+                (p.vehicleType && p.vehicleType.toLowerCase().includes(searchTerm))
+            );
+        }
+
+        displayDeliveryPersons(filtered);
+    }
+
+    // Peupler le select des livreurs disponibles
+    function populateAvailablePersonsSelect() {
+        const select = document.getElementById('assignPersonId');
+        select.innerHTML = '<option value="">-- Sélectionner un livreur --</option>';
+        
+        const availablePersons = deliveryPersons.filter(p => p.isAvailable === true);
+        
+        availablePersons.forEach(person => {
+            const option = document.createElement('option');
+            option.value = person.id;
+            option.textContent = `${person.firstName} ${person.lastName} - ${person.vehicleType || 'Véhicule non spécifié'}`;
+            select.appendChild(option);
+        });
+
+        if (availablePersons.length === 0) {
+            const option = document.createElement('option');
+            option.value = '';
+            option.textContent = 'Aucun livreur disponible';
+            option.disabled = true;
+            select.appendChild(option);
+        }
+    }
+
+    // Soumettre le formulaire livreur
+    async function handlePersonSubmit(e) {
+        e.preventDefault();
+
+        const form = e.target;
+        if (!form.checkValidity()) {
+            e.stopPropagation();
+            form.classList.add('was-validated');
+            return;
+        }
+
+        const personId = document.getElementById('personId').value;
+        const personData = {
+            firstName: document.getElementById('firstName').value,
+            lastName: document.getElementById('lastName').value,
+            phone: document.getElementById('phone').value,
+            vehicleType: document.getElementById('vehicleType').value || null,
+            isAvailable: true
+        };
+
+        showLoading(true);
+
+        try {
+            let response;
+            if (personId) {
+                // Modifier
+                response = await fetch(`${PERSON_API_URL}/${personId}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(personData)
+                });
+            } else {
+                // Créer
+                response = await fetch(PERSON_API_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(personData)
+                });
+            }
+
+            if (!response.ok) {
+                const error = await response.json();
+                throw new Error(error.message || 'Erreur lors de la sauvegarde');
+            }
+
+            showToast(personId ? 'Livreur modifié avec succès!' : 'Livreur créé avec succès!', 'success');
+            resetPersonForm();
+            loadDeliveryPersons();
+
+        } catch (error) {
+            console.error('Erreur:', error);
+            showToast(error.message, 'danger');
+        } finally {
+            showLoading(false);
+        }
+    }
+
+    // Modifier un livreur
+    async function editPerson(id) {
+        showLoading(true);
+        try {
+            const person = deliveryPersons.find(p => p.id === id);
+            if (!person) throw new Error('Livreur non trouvé');
+
+            document.getElementById('personId').value = person.id;
+            document.getElementById('firstName').value = person.firstName;
+            document.getElementById('lastName').value = person.lastName;
+            document.getElementById('phone').value = person.phone;
+            document.getElementById('vehicleType').value = person.vehicleType || '';
+
+            document.getElementById('personFormTitle').textContent = 'Modifier le livreur';
+            document.getElementById('personSubmitBtn').textContent = 'Modifier';
+            document.getElementById('personCancelBtn').style.display = 'inline-block';
+
+            // Scroll vers le formulaire
+            document.getElementById('personForm').scrollIntoView({ behavior: 'smooth' });
+
+        } catch (error) {
+            console.error('Erreur:', error);
+            showToast('Erreur lors du chargement du livreur', 'danger');
+        } finally {
+            showLoading(false);
+        }
+    }
+
+    // Supprimer un livreur
+    async function deletePerson(id) {
+        if (!confirm('Êtes-vous sûr de vouloir supprimer ce livreur ?')) return;
+
+        showLoading(true);
+        try {
+            const response = await fetch(`${PERSON_API_URL}/${id}`, { method: 'DELETE' });
+            if (!response.ok) throw new Error('Erreur lors de la suppression');
+
+            showToast('Livreur supprimé avec succès!', 'success');
+            loadDeliveryPersons();
+
+        } catch (error) {
+            console.error('Erreur:', error);
+            showToast('Erreur lors de la suppression', 'danger');
+        } finally {
+            showLoading(false);
+        }
+    }
+
+    // Réinitialiser le formulaire livreur
+    function resetPersonForm() {
+        const form = document.getElementById('personForm');
+        form.reset();
+        form.classList.remove('was-validated');
+        document.getElementById('personId').value = '';
+        document.getElementById('personFormTitle').textContent = 'Ajouter un nouveau livreur';
+        document.getElementById('personSubmitBtn').textContent = 'Ajouter';
+        document.getElementById('personCancelBtn').style.display = 'none';
+    }
+
+    // ========== ASSIGNATION ==========
+
+    // Soumettre l'assignation
+    async function handleAssignSubmit(e) {
+        e.preventDefault();
+
+        const form = e.target;
+        if (!form.checkValidity()) {
+            e.stopPropagation();
+            form.classList.add('was-validated');
+            return;
+        }
+
+        const orderId = document.getElementById('assignOrderId').value;
+        const personId = document.getElementById('assignPersonId').value;
+
+        showLoading(true);
+
+        try {
+            const response = await fetch(`${DELIVERY_API_URL}?orderId=${orderId}&deliveryPersonId=${personId}`, {
+                method: 'POST'
+            });
+
+            if (!response.ok) {
+                const error = await response.json();
+                throw new Error(error.message || 'Erreur lors de l\'assignation');
+            }
+
+            showToast('Livraison assignée avec succès!', 'success');
+            form.reset();
+            form.classList.remove('was-validated');
+            loadDeliveries();
+            loadDeliveryPersons();
+
+            // Retourner à l'onglet des livraisons
+            document.getElementById('deliveries-tab').click();
+
+        } catch (error) {
+            console.error('Erreur:', error);
+            showToast(error.message, 'danger');
+        } finally {
+            showLoading(false);
+        }
+    }
+
+    // ========== STATISTIQUES ==========
+
+    // Mettre à jour les statistiques
+    function updateStatistics() {
+        // Stats livreurs
+        const totalPersons = deliveryPersons.length;
+        const availablePersons = deliveryPersons.filter(p => p.isAvailable === true).length;
+
+        document.getElementById('statTotalPersons').textContent = totalPersons;
+        document.getElementById('statAvailable').textContent = availablePersons;
+
+        // Stats livraisons
+        const inProgress = deliveries.filter(d => d.status === 'IN_PROGRESS').length;
+        const completed = deliveries.filter(d => d.status === 'COMPLETED').length;
+
+        document.getElementById('statInProgress').textContent = inProgress;
+        document.getElementById('statCompleted').textContent = completed;
+    }
+
+    // ========== UTILITAIRES ==========
+
+    // Afficher/Masquer le loading
+    function showLoading(show) {
+        document.getElementById('loading').style.display = show ? 'block' : 'none';
+    }
+
+    // Afficher un toast
+    function showToast(message, type) {
+        const toastContainer = document.querySelector('.toast-container');
+        const toastId = 'toast-' + Date.now();
+        
+        const toastHTML = `
+            <div id="${toastId}" class="toast align-items-center text-white bg-${type} border-0" role="alert">
+                <div class="d-flex">
+                    <div class="toast-body">
+                        <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'danger' ? 'exclamation-circle' : 'info-circle'}"></i>
+                        ${message}
+                    </div>
+                    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+                </div>
+            </div>
+        `;
+        
+        toastContainer.insertAdjacentHTML('beforeend', toastHTML);
+        const toastElement = document.getElementById(toastId);
+        const toast = new bootstrap.Toast(toastElement, { delay: 5000 });
+        toast.show();
+        
+        toastElement.addEventListener('hidden.bs.toast', () => {
+            toastElement.remove();
+        });
+    }
+
+    // Formater la date
+    function formatDate(dateString) {
+        if (!dateString) return 'N/A';
+        const date = new Date(dateString);
+        const options = { 
+            year: 'numeric', 
+            month: 'short', 
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+        };
+        return date.toLocaleDateString('fr-FR', options);
+    }
+
+    // Formater le statut de livraison
+    function formatDeliveryStatus(status) {
+        const statusMap = {
+            'ASSIGNED': 'Assignée',
+            'IN_PROGRESS': 'En cours',
+            'COMPLETED': 'Terminée',
+            'FAILED': 'Échouée'
+        };
+        return statusMap[status] || status;
     }
 </script>
 
